@@ -15,7 +15,7 @@ import java.util.TimeZone;
 
 public class SyncTimeUTC extends JavaPlugin {
     
-    public static long offset = 0;
+    public long offset = 0;
 
     public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "SyncTimeUTC" + ChatColor.GRAY + "] " + ChatColor.DARK_GREEN;
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
