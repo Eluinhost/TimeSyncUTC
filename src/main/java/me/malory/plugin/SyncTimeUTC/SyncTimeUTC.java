@@ -12,24 +12,11 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Logger;
 
 public class SyncTimeUTC extends JavaPlugin {
     
-    Logger logger;
-	public static long offset = 0;
-    
-    @Override
-    public void onEnable() { 
-    	logger = getLogger();
-    	logger.info(String.format("Enabled"));
-    }
-    
-    @Override
-    public void onDisable() {
-        logger.info(String.format("Disabled"));
-    }
-    
+    public static long offset = 0;
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("synctimeutc.use")) {
