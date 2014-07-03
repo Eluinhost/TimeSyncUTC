@@ -5,9 +5,9 @@ description: Syncs the time with NIST and formats to UTC
 main: me.malory.plugin.SyncTimeUTC.SyncTimeUTC
 commands:
   SyncTimeUTC:
-    description: Gets time and sets/reset offset 
-  st:
-    description: Gets time and sets/reset offset 
+    description: Gets time and sets/reset offset
+    aliases:
+    - st
   utc:
     description: Returns the current time in UTC 
 permissions:

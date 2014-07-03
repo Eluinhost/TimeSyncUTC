@@ -21,7 +21,7 @@ public class SyncTimeUTC extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("synctimeutc.use")) {
-            if (cmd.getName().equalsIgnoreCase("SyncTimeUTC") || (cmd.getName().equalsIgnoreCase("st"))) {
+            if (cmd.getName().equalsIgnoreCase("SyncTimeUTC")) {
         		try {
         			NTPUDPClient client = new NTPUDPClient();
         			InetAddress address = InetAddress.getByName("time.nist.gov");
