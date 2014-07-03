@@ -53,7 +53,7 @@ public class SyncTimeUTC extends JavaPlugin {
         if (cmd.getName().equalsIgnoreCase("UTC")) {
     		Date offsetDate = new Date(System.currentTimeMillis() + offset);
     		String offsetString = dateFormat.format(offsetDate);
-        	sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrently it is " + "&2" + offsetString));
+        	sender.sendMessage(PREFIX + ChatColor.AQUA + "Currently it is " + ChatColor.DARK_GREEN + offsetString);
         	return true;
         }
     return false;
