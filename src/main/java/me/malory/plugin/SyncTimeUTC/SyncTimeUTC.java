@@ -45,7 +45,8 @@ public class SyncTimeUTC extends JavaPlugin {
 	                return true;
 				} catch (Exception e) {
 					e.printStackTrace();
-					return false;
+                    sender.sendMessage(PREFIX + ChatColor.RED + "Error fetching time data");
+					return true;
 				}
             }
         }
