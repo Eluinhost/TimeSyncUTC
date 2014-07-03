@@ -66,7 +66,13 @@ public class SyncTimeUTC extends JavaPlugin {
             }
         }
         if (cmd.getName().equalsIgnoreCase("UTC")) {
+            TimeZone chosenZone = defaultTimezone;
+            if(args.length > 0) {
+                //load the timezone from args[0], if invalid supplid it reverts to GMT
+                chosenZone = TimeZone.getTimeZone(args[0]);
+            }
             Date offsetDate = new Date(System.currentTimeMillis() + offset);
+            dateFormat.setTimeZone(chosenZone);
             String offsetString = dateFormat.format(offsetDate);
             sender.sendMessage(PREFIX + ChatColor.AQUA + "Currently it is " + ChatColor.DARK_GREEN + offsetString);
             return true;
