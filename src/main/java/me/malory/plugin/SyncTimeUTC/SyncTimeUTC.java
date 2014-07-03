@@ -69,7 +69,6 @@ public class SyncTimeUTC extends JavaPlugin
                     dateFormat.setTimeZone(TimeZone.getDefault());
                     String localTimeZone = dateFormat.format(offsetDate);
 
-                    sender.sendMessage(PREFIX + "Successful");
                     sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
                     sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
                     sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time (local) is " + ChatColor.DARK_GREEN + localTimeZone);
