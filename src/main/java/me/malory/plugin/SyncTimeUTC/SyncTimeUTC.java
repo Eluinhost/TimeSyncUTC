@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class SyncTimeUTC extends JavaPlugin {
-    
+
     public long offset = 0;
 
     public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "SyncTimeUTC" + ChatColor.GRAY + "] " + ChatColor.DARK_GREEN;
@@ -24,10 +24,10 @@ public class SyncTimeUTC extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.hasPermission("synctimeutc.use")) {
             if (cmd.getName().equalsIgnoreCase("SyncTimeUTC")) {
-        		try {
-        			NTPUDPClient client = new NTPUDPClient();
-        			InetAddress address = InetAddress.getByName("time.nist.gov");
-        			TimeInfo info = client.getTime(address);
+                try {
+                    NTPUDPClient client = new NTPUDPClient();
+                    InetAddress address = InetAddress.getByName("time.nist.gov");
+                    TimeInfo info = client.getTime(address);
                     info.computeDetails();
 
                     offset = info.getOffset();
@@ -35,27 +35,27 @@ public class SyncTimeUTC extends JavaPlugin {
                     long serverTime = info.getReturnTime() + offset;
 
                     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-	        		Date offsetDate = new Date(info.getReturnTime() + offset);
-	        		String offsetString = dateFormat.format(offsetDate);
+                    Date offsetDate = new Date(info.getReturnTime() + offset);
+                    String offsetString = dateFormat.format(offsetDate);
 
-	                sender.sendMessage(PREFIX + "Successful");
-	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
-	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
-	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time is " + ChatColor.DARK_GREEN + offsetString);
-	                return true;
-				} catch (Exception e) {
-					e.printStackTrace();
+                    sender.sendMessage(PREFIX + "Successful");
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time is " + ChatColor.DARK_GREEN + offsetString);
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
                     sender.sendMessage(PREFIX + ChatColor.RED + "Error fetching time data");
-					return true;
-				}
+                    return true;
+                }
             }
         }
         if (cmd.getName().equalsIgnoreCase("UTC")) {
-    		Date offsetDate = new Date(System.currentTimeMillis() + offset);
-    		String offsetString = dateFormat.format(offsetDate);
-        	sender.sendMessage(PREFIX + ChatColor.AQUA + "Currently it is " + ChatColor.DARK_GREEN + offsetString);
-        	return true;
+            Date offsetDate = new Date(System.currentTimeMillis() + offset);
+            String offsetString = dateFormat.format(offsetDate);
+            sender.sendMessage(PREFIX + ChatColor.AQUA + "Currently it is " + ChatColor.DARK_GREEN + offsetString);
+            return true;
         }
-    return false;
+        return false;
     }
 }
