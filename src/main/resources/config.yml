@@ -1,1 +1,2 @@
 default timezone: UTC
+timeserver: time.nist.gov

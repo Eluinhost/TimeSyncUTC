@@ -17,15 +17,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class SyncTimeUTC extends JavaPlugin {
+public class SyncTimeUTC extends JavaPlugin
+{
 
     private final BukkitScheduledExecutorService async = BukkitExecutors.newAsynchronous(this);
 
     public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "SyncTimeUTC" + ChatColor.GRAY + "] " + ChatColor.DARK_GREEN;
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
 
-    public TimeZone defaultTimezone = null;
-    public long offset = 0;
+    private TimeZone defaultTimezone = null;
+    private long offset = 0;
+    private String timeserverUrl = "";
 
     public void onEnable()
     {
@@ -34,20 +36,23 @@ public class SyncTimeUTC extends JavaPlugin {
         saveConfig();
 
         defaultTimezone = TimeZone.getTimeZone(configuration.getString("default timezone"));
+        timeserverUrl = configuration.getString("timeserver");
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args)
     {
-        if (sender.hasPermission("synctimeutc.use")) {
-            if (cmd.getName().equalsIgnoreCase("SyncTimeUTC")) {
+        if(sender.hasPermission("synctimeutc.use")) {
+            if(cmd.getName().equalsIgnoreCase("SyncTimeUTC")) {
                 //create a future for fetching the TimeInfo
-                ListenableFuture<TimeInfo> futureTimeInfo = async.submit(new TimeSynchronizer());
+                ListenableFuture<TimeInfo> futureTimeInfo = async.submit(new TimeSynchronizer(timeserverUrl));
 
                 //when the time is fetched trigger the callback on the main thread
-                Futures.addCallback(futureTimeInfo, new FutureCallback<TimeInfo>() {
+                Futures.addCallback(futureTimeInfo, new FutureCallback<TimeInfo>()
+                {
                     @Override
-                    public void onSuccess(TimeInfo info) {
+                    public void onSuccess(TimeInfo info)
+                    {
                         offset = info.getOffset();
 
                         long returnTime = info.getReturnTime();
@@ -67,7 +72,8 @@ public class SyncTimeUTC extends JavaPlugin {
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
+                    public void onFailure(Throwable throwable)
+                    {
                         throwable.printStackTrace();
                         sender.sendMessage(PREFIX + ChatColor.RED + "Error fetching time data");
                     }
@@ -76,7 +82,7 @@ public class SyncTimeUTC extends JavaPlugin {
                 return true;
             }
         }
-        if (cmd.getName().equalsIgnoreCase("UTC")) {
+        if(cmd.getName().equalsIgnoreCase("UTC")) {
             TimeZone chosenZone = defaultTimezone;
             if(args.length > 0) {
                 //load the timezone from args[0], if invalid supplid it reverts to GMT
