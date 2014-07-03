@@ -16,7 +16,9 @@ import java.util.TimeZone;
 public class SyncTimeUTC extends JavaPlugin {
     
     public static long offset = 0;
+
     public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "SyncTimeUTC" + ChatColor.GRAY + "] " + ChatColor.DARK_GREEN;
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -33,8 +35,6 @@ public class SyncTimeUTC extends JavaPlugin {
                     long serverTime = info.getReturnTime() + offset;
 
                     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-	        		SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
-
 	        		Date offsetDate = new Date(info.getReturnTime() + offset);
 	        		String offsetString = dateFormat.format(offsetDate);
 
@@ -50,7 +50,6 @@ public class SyncTimeUTC extends JavaPlugin {
             }
         }
         if (cmd.getName().equalsIgnoreCase("UTC")) {
-    		SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
     		Date offsetDate = new Date(System.currentTimeMillis() + offset);
     		String offsetString = dateFormat.format(offsetDate);
         	sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrently it is " + "&2" + offsetString));
