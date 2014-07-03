@@ -16,6 +16,7 @@ import java.util.TimeZone;
 public class SyncTimeUTC extends JavaPlugin {
     
     public static long offset = 0;
+    public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "SyncTimeUTC" + ChatColor.GRAY + "] " + ChatColor.DARK_GREEN;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -37,10 +38,10 @@ public class SyncTimeUTC extends JavaPlugin {
 	        		Date offsetDate = new Date(info.getReturnTime() + offset);
 	        		String offsetString = dateFormat.format(offsetDate);
 
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &2Successful"));
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent system time in millis is " + "&2" + returnTime));
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent time from NIST is " + "&2" + serverTime));
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bFixed system time is " + "&2" + offsetString));    
+	                sender.sendMessage(PREFIX + "Successful");
+	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
+	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
+	                sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time is " + ChatColor.DARK_GREEN + offsetString);
 	                return true;
 				} catch (Exception e) {
 					e.printStackTrace();
