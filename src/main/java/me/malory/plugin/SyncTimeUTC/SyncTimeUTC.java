@@ -2,7 +2,6 @@ package me.malory.plugin.SyncTimeUTC;
 
 
 import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.NtpV3Packet;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -19,7 +18,6 @@ public class SyncTimeUTC extends JavaPlugin {
     
     Logger logger;
 	public static long offset = 0;
-	public static long utcMillis = 0;
     
     @Override
     public void onEnable() { 
@@ -40,16 +38,21 @@ public class SyncTimeUTC extends JavaPlugin {
         			NTPUDPClient client = new NTPUDPClient();
         			InetAddress address = InetAddress.getByName("time.nist.gov");
         			TimeInfo info = client.getTime(address);
-        			NtpV3Packet packet = info.getMessage();
-        			offset = packet.getTransmitTimeStamp().getTime() - System.currentTimeMillis();
-        			utcMillis = packet.getTransmitTimeStamp().getTime();
-	        		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+                    info.computeDetails();
+
+                    offset = info.getOffset();
+                    long returnTime = info.getReturnTime();
+                    long serverTime = info.getReturnTime() + offset;
+
+                    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	        		SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss z");
-	        		Date offsetDate = new Date(System.currentTimeMillis() + offset);
+
+	        		Date offsetDate = new Date(info.getReturnTime() + offset);
 	        		String offsetString = dateFormat.format(offsetDate);
+
 	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &2Successful"));
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent system time in millis is " + "&2" + System.currentTimeMillis()));            
-	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent time from NIST is " + "&2" + utcMillis));
+	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent system time in millis is " + "&2" + returnTime));
+	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bCurrent time from NIST is " + "&2" + serverTime));
 	                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6SyncTimeUTC&7] &bFixed system time is " + "&2" + offsetString));    
 	                return true;
 				} catch (Exception e) {
