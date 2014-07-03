@@ -11,6 +11,13 @@ Commands
 `utc <timezone>`. Prints the corrected time in the timezone supplied. If no timezone supplied uses the default. [List of Timezones](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
 Configuration
---------------
+-------------
 
     default timezone: UTC  # Timezone identifier look at the utc command for link to list of timezones
+    
+Permissions
+-----------
+
+`synctimeutc.sync` - Allows use of the SyncTimeUTC command, default OP
+
+`synctimeutc.use` - Allows use of the utc command, default true
