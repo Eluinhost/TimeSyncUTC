@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -37,10 +38,62 @@ public class SyncTimeUTC extends JavaPlugin
 
         defaultTimezone = TimeZone.getTimeZone(configuration.getString("default timezone"));
         timeserverUrl = configuration.getString("timeserver");
+
+        syncOffset(getServer().getConsoleSender());
+    }
+
+    /**
+     * Syncronizes the offset variable, does not update straight away as it requests from NTP
+     * @param commandSender the sender to send a message to
+     */
+    private void syncOffset(CommandSender commandSender)
+    {
+        final WeakReference<CommandSender> senderReference = new WeakReference<CommandSender>(commandSender);
+
+        //create a future for fetching the TimeInfo
+        ListenableFuture<TimeInfo> futureTimeInfo = async.submit(new TimeSynchronizer(timeserverUrl));
+
+        //when the time is fetched trigger the callback on the main thread
+        Futures.addCallback(futureTimeInfo, new FutureCallback<TimeInfo>()
+        {
+            @Override
+            public void onSuccess(TimeInfo info)
+            {
+                offset = info.getOffset();
+
+                long returnTime = info.getReturnTime();
+                long serverTime = info.getReturnTime() + offset;
+
+                Date offsetDate = new Date(info.getReturnTime() + offset);
+                dateFormat.setTimeZone(defaultTimezone);
+                String defaultTimeZone = dateFormat.format(offsetDate);
+                dateFormat.setTimeZone(TimeZone.getDefault());
+                String localTimeZone = dateFormat.format(offsetDate);
+
+                CommandSender sender = senderReference.get();
+                if(sender != null) {
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time (local) is " + ChatColor.DARK_GREEN + localTimeZone);
+                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time is " + ChatColor.DARK_GREEN + defaultTimeZone);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable)
+            {
+                throwable.printStackTrace();
+
+                CommandSender sender = senderReference.get();
+                if(sender != null) {
+                    sender.sendMessage(PREFIX + ChatColor.RED + "Error fetching time data");
+                }
+            }
+        });
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args)
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
 
         if(cmd.getName().equalsIgnoreCase("SyncTimeUTC")) {
@@ -49,39 +102,7 @@ public class SyncTimeUTC extends JavaPlugin
                 return true;
             }
 
-            //create a future for fetching the TimeInfo
-            ListenableFuture<TimeInfo> futureTimeInfo = async.submit(new TimeSynchronizer(timeserverUrl));
-
-            //when the time is fetched trigger the callback on the main thread
-            Futures.addCallback(futureTimeInfo, new FutureCallback<TimeInfo>()
-            {
-                @Override
-                public void onSuccess(TimeInfo info)
-                {
-                    offset = info.getOffset();
-
-                    long returnTime = info.getReturnTime();
-                    long serverTime = info.getReturnTime() + offset;
-
-                    Date offsetDate = new Date(info.getReturnTime() + offset);
-                    dateFormat.setTimeZone(defaultTimezone);
-                    String defaultTimeZone = dateFormat.format(offsetDate);
-                    dateFormat.setTimeZone(TimeZone.getDefault());
-                    String localTimeZone = dateFormat.format(offsetDate);
-
-                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current system time in millis is " + ChatColor.DARK_GREEN + returnTime);
-                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Current time from NIST is " + ChatColor.DARK_GREEN + serverTime);
-                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time (local) is " + ChatColor.DARK_GREEN + localTimeZone);
-                    sender.sendMessage(PREFIX + ChatColor.AQUA + "Fixed system time is " + ChatColor.DARK_GREEN + defaultTimeZone);
-                }
-
-                @Override
-                public void onFailure(Throwable throwable)
-                {
-                    throwable.printStackTrace();
-                    sender.sendMessage(PREFIX + ChatColor.RED + "Error fetching time data");
-                }
-            });
+            syncOffset(sender);
 
             //always return true as this will be reached before the callback
             return true;
