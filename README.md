@@ -14,6 +14,7 @@ Configuration
 -------------
 
     default timezone: UTC  # Timezone identifier look at the utc command for link to list of timezones
+    timeserver: time.nist.gov # URL of the timeserver to check with
     
 Permissions
 -----------
